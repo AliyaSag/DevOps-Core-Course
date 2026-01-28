@@ -41,7 +41,7 @@ $env:PORT=8080; python app.py
   "system": { "platform": "Windows", "python_version": "3.12.0" },
   "runtime": { "uptime_human": "0 hour, 5 minutes" }
 }
-
+```
 2. Health Check
 - URL: GET /health
 - Description: Lightweight endpoint for liveness/readiness probes.

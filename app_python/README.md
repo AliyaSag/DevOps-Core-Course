@@ -53,7 +53,7 @@ $env:PORT=8080; python app.py
   "timestamp": "2026-01-28T16:20:00+00:00",
   "uptime_seconds": 300
 }
-
+```
 ### Configuration
 
 | Variable | Description                     | Default |

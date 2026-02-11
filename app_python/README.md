@@ -1,5 +1,7 @@
 ## DevOps Info Service
 
+![Python CI/CD Pipeline](https://github.com/AliyaSag/DevOps-Core-Course/actions/workflows/python-ci.yml/badge.svg)
+
 ### Overview
 
 A simple web application built with **Flask** that provides comprehensive system introspection, runtime information, and health status. This project serves as a foundation for learning DevOps practices including CI/CD, containerization, and monitoring.

@@ -1,0 +1,9 @@
+pytest==8.1.1
+pytest-cov==5.0.0
+
+# Linting tools
+pylint==3.2.0
+flake8==7.1.0
+
+# HTTP client for testing
+requests==2.31.0

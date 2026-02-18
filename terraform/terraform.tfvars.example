@@ -1,0 +1,5 @@
+yandex_token    = "your_yandex_oauth_token"
+cloud_id        = "your_cloud_id"
+folder_id       = "your_folder_id"
+ssh_public_key  = "ssh_public_key"
+allowed_ssh_ip  = "allowed_ssh_ip"

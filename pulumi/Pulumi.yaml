@@ -1,0 +1,3 @@
+name: devops-infrastructure
+runtime: python
+description: DevOps course infrastructure with Pulumi

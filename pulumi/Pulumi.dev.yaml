@@ -1,0 +1,4 @@
+config:
+  devops-infrastructure:zone: ru-central1-a
+  devops-infrastructure:vmName: devops-vm-pulumi
+  devops-infrastructure:allowedSshIp: 0.0.0.0/0

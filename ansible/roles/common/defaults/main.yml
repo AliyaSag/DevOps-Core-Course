@@ -1,0 +1,29 @@
+﻿---
+system_packages:
+  - python3-pip
+  - python3-venv
+  - python3-apt
+  - curl
+  - wget
+  - git
+  - vim
+  - nano
+  - htop
+  - tree
+  - net-tools
+  - dnsutils
+  - tmux
+  - screen
+  - unzip
+  - zip
+  - gcc
+  - make
+  - build-essential
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates
+  - gnupg
+  - lsb-release
+
+timezone_config: "Europe/Moscow"
+locale_config: "en_US.UTF-8"

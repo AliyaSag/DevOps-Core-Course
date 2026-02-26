@@ -1,0 +1,20 @@
+﻿---
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+docker_user: \"{{ ansible_user }}\"
+docker_compose_version: \"v2.24.0\"
+docker_daemon_config:
+  storage-driver: overlay2
+  log-driver: json-file
+  log-opts:
+    max-size: 10m
+    max-file: 3
+  metrics-addr: 127.0.0.1:9323
+  experimental: true
+  features:
+    buildkit: true

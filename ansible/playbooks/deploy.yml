@@ -1,0 +1,40 @@
+﻿---
+- name: Deploy application stack
+  hosts: webservers
+  become: yes
+  gather_facts: yes
+  
+  vars_files:
+    - ../group_vars/all.yml
+
+  pre_tasks:
+    - name: Validate required variables
+      ansible.builtin.assert:
+        that:
+          - dockerhub_username is defined
+          - dockerhub_password is defined
+          - app_name is defined
+          - app_port is defined
+        fail_msg: "Missing required variables for deployment"
+        success_msg: "All required variables present"
+
+    - name: Check Docker availability
+      ansible.builtin.command: docker info
+      register: docker_info
+      changed_when: false
+      failed_when: docker_info.rc != 0
+
+  roles:
+    - app_deploy
+
+  post_tasks:
+    - name: Verify application is running
+      ansible.builtin.uri:
+        url: "http://{{ ansible_default_ipv4.address }}:{{ app_port }}"
+        method: GET
+        status_code: 200
+      register: app_response
+
+    - name: Show application response
+      ansible.builtin.debug:
+        msg: "Application is running! Response code: {{ app_response.status }}"

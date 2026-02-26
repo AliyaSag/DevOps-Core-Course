@@ -1,1 +1,14 @@
-test
+﻿# Ansible
+*.retry
+.vault_pass
+__pycache__/
+*.pyc
+ansible/inventory/*.pyc
+.vagrant/
+*.log
+.DS_Store
+*.swp
+*.swo
+*~
+/.ansible/
+/tmp/

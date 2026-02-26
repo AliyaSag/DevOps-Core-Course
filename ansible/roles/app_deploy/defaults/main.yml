@@ -1,0 +1,12 @@
+﻿---
+app_container_name: "python-app"
+app_port: 5000
+app_restart_policy: always
+app_cpu_shares: 512
+app_memory_limit: 512m
+app_network: bridge
+app_health_check_path: /health
+app_health_check_interval: 30
+app_log_driver: json-file
+app_log_max_size: 10m
+app_log_max_file: 3

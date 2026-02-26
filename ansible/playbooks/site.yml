@@ -1,0 +1,15 @@
+﻿---
+- name: Complete site deployment
+  hosts: webservers
+  become: yes
+  
+  tasks:
+    - name: Include provision playbook
+      ansible.builtin.import_playbook: provision.yml
+      
+    - name: Include deploy playbook
+      ansible.builtin.import_playbook: deploy.yml
+      
+    - name: Final verification
+      ansible.builtin.debug:
+        msg: "Site deployment completed successfully at {{ ansible_date_time.iso8601 }}"

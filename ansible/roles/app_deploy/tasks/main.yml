@@ -1,0 +1,77 @@
+﻿---
+- name: Install required collections
+  ansible.builtin.shell:
+    cmd: ansible-galaxy collection install community.docker
+  delegate_to: localhost
+  run_once: yes
+  changed_when: false
+
+- name: Login to Docker registry
+  community.docker.docker_login:
+    registry_url: https://index.docker.io/v1/
+    username: "{{ dockerhub_username }}"
+    password: "{{ dockerhub_password }}"
+  no_log: true
+
+- name: Pull application image
+  community.docker.docker_image:
+    name: "{{ dockerhub_username }}/{{ app_name }}"
+    tag: "{{ docker_image_tag }}"
+    source: pull
+    force_source: yes
+
+- name: Check existing container
+  community.docker.docker_container_info:
+    name: "{{ app_container_name }}"
+  register: existing_container
+
+- name: Remove existing container
+  community.docker.docker_container:
+    name: "{{ app_container_name }}"
+    state: absent
+    force_kill: yes
+  when: existing_container.exists
+
+- name: Create and start container
+  community.docker.docker_container:
+    name: "{{ app_container_name }}"
+    image: "{{ dockerhub_username }}/{{ app_name }}:{{ docker_image_tag }}"
+    state: started
+    restart_policy: "{{ app_restart_policy }}"
+    ports:
+      - "{{ app_port }}:{{ app_port }}"
+    env:
+      APP_NAME: "{{ app_name }}"
+      APP_PORT: "{{ app_port }}"
+      ENVIRONMENT: "production"
+      LOG_LEVEL: "info"
+    cpu_shares: "{{ app_cpu_shares }}"
+    memory: "{{ app_memory_limit }}"
+    network_mode: "{{ app_network }}"
+    log_driver: "{{ app_log_driver }}"
+    log_options:
+      max-size: "{{ app_log_max_size }}"
+      max-file: "{{ app_log_max_file }}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:{{ app_port }}{{ app_health_check_path }}"]
+      interval: "{{ app_health_check_interval }}s"
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+  register: container_result
+
+- name: Wait for container to be healthy
+  community.docker.docker_container_info:
+    name: "{{ app_container_name }}"
+  register: container_health
+  until: container_health.container.State.Health.Status == "healthy"
+  retries: 30
+  delay: 2
+
+- name: Display container status
+  ansible.builtin.debug:
+    msg:
+      - "Container: {{ app_container_name }}"
+      - "Status: {{ container_health.container.State.Status }}"
+      - "Health: {{ container_health.container.State.Health.Status }}"
+      - "Port: {{ app_port }}"

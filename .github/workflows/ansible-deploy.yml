@@ -1,0 +1,57 @@
+name: Ansible Deployment
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'ansible/**'
+      - '.github/workflows/ansible-deploy.yml'
+
+jobs:
+  deploy:
+    name: Deploy Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Ansible and collections
+        run: |
+          pip install ansible
+          ansible-galaxy collection install community.docker
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VM_HOST: ${{ secrets.VM_HOST }}
+
+      - name: Create vault password file
+        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /tmp/vault_pass
+
+      - name: Deploy with Ansible
+        run: |
+          cd ansible
+          ansible-playbook playbooks/deploy.yml \
+            -i inventory/hosts.ini \
+            --vault-password-file /tmp/vault_pass \
+            -e "ansible_user=${{ secrets.VM_USER }}"
+
+      - name: Verify Deployment
+        run: |
+          sleep 10
+          curl -f http://${{ secrets.VM_HOST }}:8000 || echo "App not responding yet"
+          curl -f http://${{ secrets.VM_HOST }}:8000/health || echo "Health check failed"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f /tmp/vault_pass
